@@ -15,4 +15,4 @@ reset:
 	rm results/*
 
 $(BENCH) : $(INCLUDE) benchmark.cpp
-	g++ -o $(BENCH) benchmark.cpp $(OPTIONS) -I src
+	g++-11 -o $(BENCH) benchmark.cpp $(OPTIONS) -I src
