@@ -124,6 +124,12 @@ std::vector<double> parse_arguments(int argc, char *argv[]){
             data.push_back(dis(gen));
         }
     }
+    else if(strcmp(argv[1],"poisoning") == 0){
+            std::uniform_int_distribution<int> dis(1, 100);
+            for (long i = 0; i < num_data; i++){
+                data.push_back(dis(gen));
+            }
+        }
     else{
         if (cache_data.size() == 0){
             std::cout << argv[1] << "\n";
