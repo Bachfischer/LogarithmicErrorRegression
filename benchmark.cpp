@@ -3,6 +3,7 @@
 #include "src/log_regression.h"
 #include "src/competitor_regression.h"
 #include "src/irls.h"
+#include "src/poisoning.h"
 
 #include "src/helpers/regression_benchmark.h"
 #include "src/helpers/io_handler.h"
@@ -12,7 +13,10 @@
 int main(int argc, char *argv[]){
     srand(time(NULL));
 
-    std::vector<double> data = parse_arguments(argc, argv);
+    std::vector<double> legitimate_data = parse_arguments(argc, argv);
+
+    // Perform poisoning
+    std::vector<double> data = perform_poisoning((legitimate_data));
 
     std::string data_name = argv[1];
     std::string outfile = "results/benchmark.csv";
