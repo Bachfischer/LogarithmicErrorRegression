@@ -32,7 +32,9 @@ double calculate_mean(const std::vector<T>& vector)
     return mean;
 }
 
-/* Compute the rank that key S(i) would have if it was inserted in K ∪ P and assign this rank as the i-th element of the new sequence */
+/*
+    Compute the rank that key S(i) would have if it was inserted in K ∪ P and assign this rank as the i-th element of the new sequence
+*/
 std::vector<size_t> compute_rank_for_endpoints(std::vector<double> & endpoints, std::vector<double> & keyset){
     std::vector<size_t> computed_rank_for_endpoint;
 
@@ -56,7 +58,9 @@ std::vector<size_t> compute_rank_for_endpoints(std::vector<double> & endpoints, 
     return computed_rank_for_endpoint;
 }
 
-/* Extract non-occupied keys for a given sequence of legitimate and poisoning keys */
+/*
+    Extract non-occupied keys for a given sequence of legitimate and poisoning keys
+*/
 std::vector<double> partition_non_occupied_keys(std::vector<double> & K, std::set<double> & P) {
 
     std::vector <double> keyset;
@@ -96,6 +100,9 @@ std::vector<double> partition_non_occupied_keys(std::vector<double> & K, std::se
 
 }
 
+/*
+    Implementation of the greedy poisoning attack on regression models as described in Kornaropoulos et al. ("The Price of Tailoring the Index to Your Data: Poisoning Attacks on Learned Index Structures")
+ */
 std::set<double> obtain_poisoning_keys(double poisoning_threshold, std::vector<double> & keyset, std::vector<size_t> &rankset) {
     // Total number of elements
     int n = keyset.size();
@@ -210,10 +217,10 @@ std::set<double> obtain_poisoning_keys(double poisoning_threshold, std::vector<d
 }
 
 /*
-    Performs poisoning of dataset
+    Generate poisoning keys based on legitimate keyset (up to specified poisoning threshold)
 */
-std::vector<double> perform_poisoning(std::vector<double> & legit_keys) {
-    //std::vector<double> poisoning_keys
+std::vector<double> perform_poisoning(std::vector<double> & legit_keys, double poisoning_threshold) {
+
     std::cout << "Legitimate keys: " << std::endl;
     for (double i: legit_keys)
         std::cout << i << ' ';
@@ -225,13 +232,13 @@ std::vector<double> perform_poisoning(std::vector<double> & legit_keys) {
     for (size_t i: legit_ranks)
         std::cout << i << ' ';
 
-    // TODO: Pass poisoning threshold as command-line parameter
-    std::set<double> poisoning_keys = obtain_poisoning_keys(0.2, legit_keys, legit_ranks);
+    std::set<double> poisoning_keys = obtain_poisoning_keys(poisoning_threshold, legit_keys, legit_ranks);
 
-
+    /*
+     * Merge poisoning keys with legitimate keys to generated poisoned keyset
+     */
     std::vector <double> poisoned_keyset;
     std::merge(legit_keys.begin(), legit_keys.end(), poisoning_keys.begin(), poisoning_keys.end(), std::back_inserter(poisoned_keyset));
-
     std::sort(poisoned_keyset.begin(), poisoned_keyset.end());
 
     std::cout << "Poisoned keyset: " << std::endl;

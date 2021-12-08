@@ -47,7 +47,7 @@ std::vector<long> perform_benchmark(linear_regression lr, std::vector<double>& d
 
 
 template<build_function f>
-void benchmark_regression(std::vector<double> & data, std::vector<double> & lookups, std::string regression_name, std::string data_name, std::string outfile){
+void benchmark_regression(std::vector<double> & data, std::vector<double> & lookups, std::string regression_name, std::string data_name, double poisoning_threshold, std::string outfile){
     auto start = std::chrono::high_resolution_clock::now();
     linear_regression lr = f(data);
     auto stop = std::chrono::high_resolution_clock::now();
@@ -71,8 +71,8 @@ void benchmark_regression(std::vector<double> & data, std::vector<double> & look
 
     std::ofstream file;
     file.open(outfile, std::ios_base::app);
-    file << regression_name << ";" << data_name << ";" << data.size() << ";" << lookups.size() << ";" << mean << ";" << median << ";" << log_error << ";" << d_log_error << ";" << mse_error << ";" << build_time << std::endl;
+    file << regression_name << ";" << data_name << ";" << poisoning_threshold << ";" << data.size() << ";" << lookups.size() << ";" << mean << ";" << median << ";" << log_error << ";" << d_log_error << ";" << mse_error << ";" << build_time << std::endl;
     file.close();
     
-    std::cout << regression_name << " data_name:" << data_name << " data size:" << data.size() << " lookups size:" << lookups.size() << " mean lookup ns:" << mean << " median lookup ns:" << median << " log error:" << log_error << " discrete log error:" << d_log_error << " mse error:" << mse_error << " build time:" << build_time << std::endl;
+    std::cout << regression_name << " data_name:" << data_name << "; poisoning_threshold: " << poisoning_threshold << "; data size:" << data.size() << " lookups size:" << lookups.size() << " mean lookup ns:" << mean << " median lookup ns:" << median << " log error:" << log_error << " discrete log error:" << d_log_error << " mse error:" << mse_error << " build time:" << build_time << std::endl;
 }

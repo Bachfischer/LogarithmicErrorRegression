@@ -54,6 +54,7 @@ std::vector<double> parse_arguments(int argc, char *argv[]){
         std::cout << "debug" << std::endl;
         std::cout << "exp" << std::endl;
         std::cout << "outlier" << std::endl;
+        std::cout << "poisoning" << std::endl;
         exit(0);
     }
     
@@ -125,7 +126,7 @@ std::vector<double> parse_arguments(int argc, char *argv[]){
         }
     }
     else if(strcmp(argv[1],"poisoning") == 0){
-            std::uniform_int_distribution<int> dis(1, 100);
+            std::uniform_int_distribution<int> dis(1, 10000);
             for (long i = 0; i < num_data; i++){
                 data.push_back(dis(gen));
             }
