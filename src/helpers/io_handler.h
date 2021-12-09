@@ -126,7 +126,7 @@ std::vector<double> parse_arguments(int argc, char *argv[]){
         }
     }
     else if(strcmp(argv[1],"poisoning") == 0){
-            std::uniform_int_distribution<int> dis(1, 10000);
+            std::uniform_int_distribution<int> dis(1, 100000);
             for (long i = 0; i < num_data; i++){
                 data.push_back(dis(gen));
             }

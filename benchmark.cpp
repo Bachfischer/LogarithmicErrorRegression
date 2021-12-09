@@ -15,9 +15,13 @@ int main(int argc, char *argv[]){
 
     std::vector<double> legitimate_data = parse_arguments(argc, argv);
 
-    // Perform poisoning
-    std::vector<double> poisoning_thresholds = { 0.05, 0.1, 0.15, 0.2};
+    // Generate vector of poisoning thresholds from 0.01, 0.02, .... , 0.2
+    std::vector<double> poisoning_thresholds;
+    for (double threshold = 0.01; threshold <= 0.21; threshold = threshold + 0.01) {
+        poisoning_thresholds.push_back(threshold);
+    }
 
+    // Perform poisoning
     for (auto poisoning_threshold : poisoning_thresholds) {
 
         std::vector<double> poisoned_data = perform_poisoning(legitimate_data, poisoning_threshold);
