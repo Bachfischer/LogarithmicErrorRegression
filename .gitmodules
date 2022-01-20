@@ -1,3 +1,3 @@
-[submodule "competitors/ALEX"]
+[submodule "src/helpers/competitors/ALEX"]
 	path = src/helpers/competitors/ALEX
-	url = https://github.com/microsoft/ALEX.git
+	url = https://github.com/microsoft/alex.git
