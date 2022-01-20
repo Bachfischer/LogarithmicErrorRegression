@@ -1,3 +1,6 @@
 [submodule "src/helpers/competitors/ALEX"]
 	path = src/helpers/competitors/ALEX
 	url = https://github.com/microsoft/alex.git
+[submodule "src/helpers/competitors/PGM"]
+	path = src/helpers/competitors/PGM
+	url = https://github.com/gvinciguerra/PGM-index.git

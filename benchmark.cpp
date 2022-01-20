@@ -7,6 +7,7 @@
 
 #include "src/helpers/regression_benchmark.h"
 #include "src/helpers/alex_benchmark.h"
+#include "src/helpers/pgm_benchmark.h"
 #include "src/helpers/io_handler.h"
 #include "src/theil_sen.h"
 #include "src/fast_brute_force.h"
@@ -47,6 +48,8 @@ int main(int argc, char *argv[]){
         benchmark_regression<theil_sen>(legitimate_data,legit_lookups,"TheilSen",data_name, poisoning_threshold, legitimate_outfile);
         benchmark_regression<create_regression_optimal<L1Norm>>(legitimate_data,legit_lookups,"LAD",data_name,poisoning_threshold, legitimate_outfile);
         benchmark_alex(legitimate_data,legit_lookups,"ALEX",data_name,poisoning_threshold, legitimate_outfile);
+        benchmark_pgm(legitimate_data,legit_lookups,"PGM",data_name,poisoning_threshold, legitimate_outfile);
+
 
         std::cout << std::endl << std::endl;
 
@@ -64,6 +67,8 @@ int main(int argc, char *argv[]){
         benchmark_regression<theil_sen>(poisoned_data,poisoned_lookups,"TheilSen",data_name, poisoning_threshold,poisoned_outfile);
         benchmark_regression<create_regression_optimal<L1Norm>>(poisoned_data,poisoned_lookups,"LAD",data_name,poisoning_threshold, poisoned_outfile);
         benchmark_alex(poisoned_data,legit_lookups,"ALEX",data_name,poisoning_threshold, poisoned_outfile);
+        benchmark_pgm(poisoned_data,legit_lookups,"PGM",data_name,poisoning_threshold, poisoned_outfile);
+
 
 
     }

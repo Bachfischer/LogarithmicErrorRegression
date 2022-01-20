@@ -1,31 +1,37 @@
 #pragma once
 
+#include <chrono>
+#include <random>
 #include <iostream>
-#include "./competitors/ALEX/src/core/alex.h"
+#include <algorithm>
+#include <string>
+#include "./competitors/PGM/include/pgm/pgm_index.hpp"
+#include "../exponential_search.h"
 
 #define KEY_TYPE double
-#define PAYLOAD_TYPE double
+#define EPSILON 128 // space-time trade-off parameter
 
 /*
     Calculates the error for a single element for a certain linear function
 */
 template<ERROR_TYPE E, bool ROUND = true, bool BOUNDED = true>
-inline double calculate_error_single_element_alex(std::vector<double>& data, alex::Alex<KEY_TYPE, PAYLOAD_TYPE> & index, int i){
+inline double calculate_error_single_element_pgm(std::vector<double>& data, pgm::PGMIndex<KEY_TYPE, EPSILON> & index, int i){
     double x = data[i];
     double y = i;
-    auto it = index.lower_bound(x);
-    return 0;
-    //return apply_errorfn<E, ROUND, BOUNDED>(low_pos, y, data.size()-1);
+    auto approx_range = index.search(x);
+    auto low_pos = approx_range.lo;
+
+    return apply_errorfn<E, ROUND, BOUNDED>(low_pos, y, data.size()-1);
 }
 
 /*
     Calculates the total error for a linear function
 */
 template<ERROR_TYPE E, bool CORRECT = true, bool BOUNDED = true>
-long double calculate_error_alex(std::vector<double>& data, alex::Alex<KEY_TYPE, PAYLOAD_TYPE> & index) {
+long double calculate_error_pgm(std::vector<double>& data, pgm::PGMIndex<KEY_TYPE, EPSILON> & index) {
     long double total_error = 0;
     for (long i = 0; i < data.size(); i++) {
-        total_error += calculate_error_single_element_alex<E, CORRECT, BOUNDED>(data, index, i);
+        total_error += calculate_error_single_element_pgm<E, CORRECT, BOUNDED>(data, index, i);
     }
     return total_error;
 }
@@ -33,18 +39,14 @@ long double calculate_error_alex(std::vector<double>& data, alex::Alex<KEY_TYPE,
 /*
     Benchmark ALEX by measuring lookuptimes
 */
-long benchmark_lookup_alex(std::vector<double> & data, std::vector<double> lookups, alex::Alex<KEY_TYPE, PAYLOAD_TYPE> & index){
+long benchmark_lookup_pgm(std::vector<double> & data, std::vector<double> lookups, pgm::PGMIndex<KEY_TYPE, EPSILON> & index){
     int data_size = data.size()-1;
     auto start = std::chrono::high_resolution_clock::now();
 
     for(int i = 0; i < lookups.size(); i++){
-        auto it = index.lower_bound(lookups[i]);
-        uint64_t guess;
-        if (it == index.end()) {
-            guess = data.size() - 1;
-        } else {
-            guess = it.payload();
-        }
+        auto approx_range = index.search(lookups[i]);
+        auto low_pos = approx_range.lo;
+        DoNotOptimize(exponential_search_lower_bound_linear_head(low_pos, lookups[i], data));
     }
 
     auto stop = std::chrono::high_resolution_clock::now();
@@ -53,10 +55,10 @@ long benchmark_lookup_alex(std::vector<double> & data, std::vector<double> looku
     return duration.count();
 }
 
-std::vector<long> perform_benchmark(alex::Alex<KEY_TYPE, PAYLOAD_TYPE> & index, std::vector<double>& data, std::vector<double>& lookups, int num){
+std::vector<long> perform_benchmark(pgm::PGMIndex<KEY_TYPE, EPSILON> & index, std::vector<double>& data, std::vector<double>& lookups, int num){
     std::vector<long> measurements;
     for (int i = 0; i < num; i++){
-        long time = benchmark_lookup_alex(data, lookups, index);
+        long time = benchmark_lookup_pgm(data, lookups, index);
         measurements.push_back(time);
     }
 
@@ -64,20 +66,12 @@ std::vector<long> perform_benchmark(alex::Alex<KEY_TYPE, PAYLOAD_TYPE> & index, 
     return measurements;
 }
 
-void benchmark_alex(std::vector<double> & data, std::vector<double> & lookups, std::string regression_name, std::string data_name, double poisoning_threshold, std::string outfile){
+void benchmark_pgm(std::vector<double> & data, std::vector<double> & lookups, std::string regression_name, std::string data_name, double poisoning_threshold, std::string outfile){
 
-    // Combine pre-defined keys with randomly generated payloads (can not pass a simple vector to ALEX)
-    auto values = new std::pair<KEY_TYPE, PAYLOAD_TYPE>[data.size()];
-    std::mt19937_64 gen_payload(std::random_device{}());
-    for (int i = 0; i < data.size(); i++) {
-        values[i].first = data[i];
-        values[i].second = static_cast<PAYLOAD_TYPE>(gen_payload());
-    }
     auto start = std::chrono::high_resolution_clock::now();
 
-    // Create ALEX and bulk load
-    alex::Alex<KEY_TYPE, PAYLOAD_TYPE> index;
-    index.bulk_load(values, data.size());
+    // Create PGM and bulk load
+    pgm::PGMIndex<KEY_TYPE, EPSILON> index(data);
 
     auto stop = std::chrono::high_resolution_clock::now();
     long build_time = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count();
@@ -94,9 +88,9 @@ void benchmark_alex(std::vector<double> & data, std::vector<double> & lookups, s
     mean /= lookups.size();
     median /= lookups.size();
 
-    long log_error = calculate_error_alex<LogNorm, true, false>(data, index);
-    long d_log_error = calculate_error_alex<DiscreteLogNorm, true, false>(data, index);
-    long mse_error = calculate_error_alex<L2Norm, true, false>(data, index);
+    long log_error = calculate_error_pgm<LogNorm, true, false>(data, index);
+    long d_log_error = calculate_error_pgm<DiscreteLogNorm, true, false>(data, index);
+    long mse_error = calculate_error_pgm<L2Norm, true, false>(data, index);
 
     std::ofstream file;
     file.open(outfile, std::ios_base::app);
