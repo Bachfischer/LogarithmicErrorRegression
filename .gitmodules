@@ -1,0 +1,3 @@
+[submodule "competitors/ALEX"]
+	path = src/helpers/competitors/ALEX
+	url = https://github.com/microsoft/ALEX.git
