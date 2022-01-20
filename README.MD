@@ -18,6 +18,7 @@ randint
 debug
 exp
 outlier
+poisoning (work-in-progress)
 ```
 
 Example inputs/outputs:
