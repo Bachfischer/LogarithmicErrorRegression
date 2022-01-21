@@ -43,15 +43,18 @@ std::vector<size_t> compute_rank_for_endpoints(std::vector<double> & endpoints, 
         std::copy(keyset.begin(), keyset.end(), std::back_inserter(keyset_extended));
         keyset_extended.push_back(endpoint);
 
+        /*
         std::cout << std::endl << "Extended keyset" << std::endl;
         for (double i: keyset_extended)
             std::cout << i << ' ';
         std::cout << std::endl;
+         */
 
-        //std::vector<size_t> rank = tag_sort(keyset_extended);
         auto iter = std::lower_bound(keyset_extended.begin(), keyset_extended.end(), endpoint);
         int rank = int(iter - keyset_extended.begin());
+        /*
         std::cout << "Rank of endpoint " << endpoint << ": " << rank << std::endl;
+        */
 
         computed_rank_for_endpoint.push_back(rank);
     }
@@ -65,21 +68,22 @@ std::vector<double> partition_non_occupied_keys(std::vector<double> & K, std::se
 
     std::vector <double> keyset;
     std::merge(K.begin(), K.end(), P.begin(), P.end(), std::back_inserter(keyset));
-
+    /*
     for (double i: keyset)
         std::cout << i << ' ';
     std::cout << std::endl;
-
+    */
 
     size_t n = keyset.size();
-    std::cout << "Keyset size: " << n << std::endl;
+    //std::cout << "Keyset size: " << n << std::endl;
 
 
     double lower_bound = keyset[0] - 1;
     double upper_bound = keyset[n-1] + 1;
+    /*
     std::cout << "Lower bound: " << lower_bound << std::endl;
     std::cout << "Upper bound: " << upper_bound << std::endl;
-
+    */
 
     std::vector <double> endpoints;
     bool is_in_sequence = false;
@@ -106,38 +110,41 @@ std::vector<double> partition_non_occupied_keys(std::vector<double> & K, std::se
 std::set<double> obtain_poisoning_keys(double poisoning_threshold, std::vector<double> & keyset, std::vector<size_t> &rankset) {
     // Total number of elements
     int n = keyset.size();
-    std::cout << std::endl << "Number of legitimate keys: " << n << std::endl;
+    //std::cout << std::endl << "Number of legitimate keys: " << n << std::endl;
 
     // Number of poisoning keys P
     int P = int(poisoning_threshold * n);
-    std::cout << "Number of poisoning keys to be generated: " << P << std::endl;
+    //std::cout << "Number of poisoning keys to be generated: " << P << std::endl;
 
     std::set<double> poisoning_keys;
 
     while(poisoning_keys.size() < P){
-        std::cout << "Current status: " << poisoning_keys.size() << " out of " << P << " poisoning keys generated." << std::endl;
+        //std::cout << "Current status: " << poisoning_keys.size() << " out of " << P << " poisoning keys generated." << std::endl;
 
         // Partition the non-occupied keys into subsequences such that each subsequence consists of consecutive non-occupied keys;
         // Extract the endpoints of each subsequence and sort them to construct the new sequence of endpoints S(i), where i <= 2(n + j);
 
         // S: endpoints
         std::vector<double> S = partition_non_occupied_keys(keyset, poisoning_keys);
-        std::cout << "Length of endpoints: " << S.size() << std::endl;
+        //std::cout << "Length of endpoints: " << S.size() << std::endl;
 
         // Endpoint keys are continuously increasing
+        /*
         std::cout << "Endpoint keys: " << std::endl;
         for (double i: S)
             std::cout << i << ' ';
+        */
 
         // Compute the rank that key S(i) would have if it was inserted in K ∪ P and assign this rank as the i-th element of the new sequence T (i), where i <= 2(n + j) ;
         // T: list_rank
         std::vector<size_t> T = compute_rank_for_endpoints(S, keyset);
 
+        /*
         std::cout << std::endl << "Computed ranks of endpoints: " << std::endl;
         for (double i: T)
             std::cout << i << ' ';
         std::cout << std::endl;
-
+        */
 
         // Compute the effect of choosing S(1) as a poisoning key and inserting it to K ∪ P with the appropriate rank adjustments.
         // Specifically, evaluate the sequences each of which is the mean M for a different variable, e.g., K, R, KR. Compute MK (1), MK2 (1), MKR(1), and L(1) ;
@@ -192,9 +199,11 @@ std::set<double> obtain_poisoning_keys(double poisoning_threshold, std::vector<d
             delta_S[i] = S[i+1] - S[i] ;
 
             M_K[i] = M_K[i-1] + (delta_S[i] / n) ;
+            /*
             std::cout <<  "M_K_square: " <<  M_K_square[i-1] << std::endl;
             std::cout << "S[i]: " << S[i] << std::endl;
             std::cout << "delta_S[i]: " << delta_S[i] << std::endl;
+            */
 
             M_K_square[i] = M_K_square[i-1] + ( (( 2 * S[i] + delta_S[i]) * delta_S[i]) / (n + 1) );
 
@@ -210,7 +219,7 @@ std::set<double> obtain_poisoning_keys(double poisoning_threshold, std::vector<d
         // get argmax of items in L
 
         int optimal_key_index =  std::distance(L.begin(),std::max_element(L.begin(), L.end()));
-        std::cout << "Generated poisoning key: " <<  S[optimal_key_index] << std::endl;
+        //std::cout << "Generated poisoning key: " <<  S[optimal_key_index] << std::endl;
         poisoning_keys.insert(S[optimal_key_index]);
     }
     return poisoning_keys;
@@ -221,16 +230,20 @@ std::set<double> obtain_poisoning_keys(double poisoning_threshold, std::vector<d
 */
 std::vector<double> perform_poisoning(std::vector<double> & legit_keys, double poisoning_threshold) {
 
+    /*
     std::cout << "Legitimate keys: " << std::endl;
     for (double i: legit_keys)
         std::cout << i << ' ';
+    */
 
     std::vector<size_t> legit_ranks = tag_sort(legit_keys);
 
+    /*
     std::cout << std::endl << "Legitimate ranks: " << std::endl;
 
     for (size_t i: legit_ranks)
         std::cout << i << ' ';
+    */
 
     std::set<double> poisoning_keys = obtain_poisoning_keys(poisoning_threshold, legit_keys, legit_ranks);
 
@@ -241,11 +254,12 @@ std::vector<double> perform_poisoning(std::vector<double> & legit_keys, double p
     std::merge(legit_keys.begin(), legit_keys.end(), poisoning_keys.begin(), poisoning_keys.end(), std::back_inserter(poisoned_keyset));
     std::sort(poisoned_keyset.begin(), poisoned_keyset.end());
 
+    /*
     std::cout << "Poisoned keyset: " << std::endl;
     for (double i: poisoned_keyset)
         std::cout << i << ' ';
     std::cout << std::endl;
-
+    */
     return poisoned_keyset;
 
 }
