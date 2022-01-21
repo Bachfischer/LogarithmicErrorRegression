@@ -9,13 +9,12 @@
 #include "../exponential_search.h"
 
 #define KEY_TYPE double
-#define EPSILON 128 // space-time trade-off parameter
 
 /*
     Calculates the error for a single element for a certain linear function
 */
 template<ERROR_TYPE E, bool ROUND = true, bool BOUNDED = true>
-inline double calculate_error_single_element_pgm(std::vector<double>& data, pgm::PGMIndex<KEY_TYPE, EPSILON> & index, int i){
+inline double calculate_error_single_element_pgm(std::vector<double>& data, pgm::PGMIndex<KEY_TYPE> & index, int i){
     double x = data[i];
     double y = i;
     auto approx_range = index.search(x);
@@ -28,7 +27,7 @@ inline double calculate_error_single_element_pgm(std::vector<double>& data, pgm:
     Calculates the total error for a linear function
 */
 template<ERROR_TYPE E, bool CORRECT = true, bool BOUNDED = true>
-long double calculate_error_pgm(std::vector<double>& data, pgm::PGMIndex<KEY_TYPE, EPSILON> & index) {
+long double calculate_error_pgm(std::vector<double>& data, pgm::PGMIndex<KEY_TYPE> & index) {
     long double total_error = 0;
     for (long i = 0; i < data.size(); i++) {
         total_error += calculate_error_single_element_pgm<E, CORRECT, BOUNDED>(data, index, i);
@@ -39,15 +38,14 @@ long double calculate_error_pgm(std::vector<double>& data, pgm::PGMIndex<KEY_TYP
 /*
     Benchmark ALEX by measuring lookuptimes
 */
-long benchmark_lookup_pgm(std::vector<double> & data, std::vector<double> lookups, pgm::PGMIndex<KEY_TYPE, EPSILON> & index){
+long benchmark_lookup_pgm(std::vector<double> & data, std::vector<double> lookups, pgm::PGMIndex<KEY_TYPE> & index){
     int data_size = data.size()-1;
     auto start = std::chrono::high_resolution_clock::now();
 
     for(int i = 0; i < lookups.size(); i++){
         auto approx_range = index.search(lookups[i]);
-        auto low_pos = approx_range.lo;
-        DoNotOptimize(exponential_search_lower_bound_linear_head(low_pos, lookups[i], data));
-    }
+        DoNotOptimize(binary_search_lower_bound(approx_range.lo, approx_range.hi, lookups[i], data));
+    }//
 
     auto stop = std::chrono::high_resolution_clock::now();
     auto duration = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start);
@@ -55,7 +53,7 @@ long benchmark_lookup_pgm(std::vector<double> & data, std::vector<double> lookup
     return duration.count();
 }
 
-std::vector<long> perform_benchmark(pgm::PGMIndex<KEY_TYPE, EPSILON> & index, std::vector<double>& data, std::vector<double>& lookups, int num){
+std::vector<long> perform_benchmark(pgm::PGMIndex<KEY_TYPE> & index, std::vector<double>& data, std::vector<double>& lookups, int num){
     std::vector<long> measurements;
     for (int i = 0; i < num; i++){
         long time = benchmark_lookup_pgm(data, lookups, index);
@@ -71,7 +69,7 @@ void benchmark_pgm(std::vector<double> & data, std::vector<double> & lookups, st
     auto start = std::chrono::high_resolution_clock::now();
 
     // Create PGM and bulk load
-    pgm::PGMIndex<KEY_TYPE, EPSILON> index(data);
+    pgm::PGMIndex<KEY_TYPE> index(data);
 
     auto stop = std::chrono::high_resolution_clock::now();
     long build_time = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count();
