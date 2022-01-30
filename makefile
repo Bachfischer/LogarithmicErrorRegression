@@ -1,7 +1,7 @@
 FOLDERS:=bin/ results/
 BENCH:=bin/benchmark
 
-OPTIONS:=-march=native -O3
+OPTIONS:=-march=native -O3 -fopenmp
 INCLUDE:=$(wildcard src/*) $(wildcard src/helpers/*)
 
 .PHONY : all
