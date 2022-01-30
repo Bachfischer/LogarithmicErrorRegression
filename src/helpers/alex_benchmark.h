@@ -15,6 +15,7 @@ inline double calculate_error_single_element_alex(std::vector<double>& data, ale
     double y = i;
     auto it = index.lower_bound(x);
     return 0;
+    // Cannot calculate error since lower_bound always return correct position
     //return apply_errorfn<E, ROUND, BOUNDED>(low_pos, y, data.size()-1);
 }
 
@@ -38,13 +39,8 @@ long benchmark_lookup_alex(std::vector<double> & data, std::vector<double> looku
     auto start = std::chrono::high_resolution_clock::now();
 
     for(int i = 0; i < lookups.size(); i++){
-        auto it = index.lower_bound(lookups[i]);
-        uint64_t guess;
-        if (it == index.end()) {
-            guess = data.size() - 1;
-        } else {
-            guess = it.payload();
-        }
+        //DoNotOptimize(index.lower_bound(lookups[i]));
+        auto payload = index.get_payload(lookups[i]);
     }
 
     auto stop = std::chrono::high_resolution_clock::now();
@@ -104,4 +100,6 @@ void benchmark_alex(std::vector<double> & data, std::vector<double> & lookups, s
     file.close();
 
     std::cout << regression_name << " data_name:" << data_name << "; poisoning_threshold: " << poisoning_threshold << "; data size:" << data.size() << " lookups size:" << lookups.size() << " mean lookup ns:" << mean << " median lookup ns:" << median << " log error:" << log_error << " discrete log error:" << d_log_error << " mse error:" << mse_error << " build time:" << build_time << std::endl;
+
+    delete[] values;
 }
