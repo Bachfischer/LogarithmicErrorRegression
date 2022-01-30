@@ -17,6 +17,9 @@ int main(int argc, char *argv[]){
 
     std::vector<double> legitimate_data = parse_arguments(argc, argv);
 
+
+    std::cout << "Generating poisoning keys" << std::endl;
+
     // Generate vector of poisoning thresholds from 0.01, 0.02, .... , 0.2
     std::vector<double> poisoning_thresholds;
     for (double threshold = 0.01; threshold <= 0.21; threshold = threshold + 0.01) {
@@ -34,40 +37,34 @@ int main(int argc, char *argv[]){
 
         int num_lookups = 1000000;
 
-        std::vector<double> legit_lookups;
-        legit_lookups.resize(num_lookups);
-        for (int i = 0; i < legit_lookups.size(); i++){
-            legit_lookups[i] = legitimate_data[rand()%legitimate_data.size()];
+        std::vector<double> lookups;
+        lookups.resize(num_lookups);
+        for (int i = 0; i < lookups.size(); i++){
+            lookups[i] = legitimate_data[rand() % legitimate_data.size()];
         }
 
+        std::cout << std::endl << std::endl;
         std::cout << "Benchmark results for legitimate data: " << std::endl;
-        benchmark_regression<simple_linear_regression_stable>(legitimate_data,legit_lookups,"SLR",data_name, poisoning_threshold, legitimate_outfile);
-        benchmark_regression<create_regression_tournament_selection<LogNorm>>(legitimate_data,legit_lookups,"LogTE",data_name,poisoning_threshold, legitimate_outfile);
-        benchmark_regression<create_regression_tournament_selection<FastDiscreteLogNorm>>(legitimate_data,legit_lookups,"DLogTE",data_name,poisoning_threshold, legitimate_outfile);
-        benchmark_regression<build_regression_direct_descent>(legitimate_data,legit_lookups,"2P",data_name, poisoning_threshold, legitimate_outfile);
-        benchmark_regression<theil_sen>(legitimate_data,legit_lookups,"TheilSen",data_name, poisoning_threshold, legitimate_outfile);
-        benchmark_regression<create_regression_optimal<L1Norm>>(legitimate_data,legit_lookups,"LAD",data_name,poisoning_threshold, legitimate_outfile);
-        benchmark_alex(legitimate_data,legit_lookups,"ALEX",data_name,poisoning_threshold, legitimate_outfile);
-        benchmark_pgm(legitimate_data,legit_lookups,"PGM",data_name,poisoning_threshold, legitimate_outfile);
+        benchmark_regression<simple_linear_regression_stable>(legitimate_data,lookups,"SLR",data_name, poisoning_threshold, legitimate_outfile);
+        benchmark_regression<create_regression_tournament_selection<LogNorm>>(legitimate_data,lookups,"LogTE",data_name,poisoning_threshold, legitimate_outfile);
+        benchmark_regression<create_regression_tournament_selection<FastDiscreteLogNorm>>(legitimate_data,lookups,"DLogTE",data_name,poisoning_threshold, legitimate_outfile);
+        benchmark_regression<build_regression_direct_descent>(legitimate_data,lookups,"2P",data_name, poisoning_threshold, legitimate_outfile);
+        benchmark_regression<theil_sen>(legitimate_data,lookups,"TheilSen",data_name, poisoning_threshold, legitimate_outfile);
+        benchmark_regression<create_regression_optimal<L1Norm>>(legitimate_data,lookups,"LAD",data_name,poisoning_threshold, legitimate_outfile);
+        benchmark_alex(legitimate_data, lookups, "ALEX", data_name, poisoning_threshold, legitimate_outfile);
+        benchmark_pgm(legitimate_data, lookups, "PGM", data_name, poisoning_threshold, legitimate_outfile);
 
 
         std::cout << std::endl << std::endl;
-
-
-        std::vector<double> poisoned_lookups;
-        poisoned_lookups.resize(num_lookups);
-        for (int i = 0; i < poisoned_lookups.size(); i++){
-            poisoned_lookups[i] = poisoned_data[rand()%poisoned_data.size()];
-        }
         std::cout << "Benchmark results for poisoned data: " << std::endl;
-        benchmark_regression<simple_linear_regression_stable>(poisoned_data,poisoned_lookups,"SLR",data_name, poisoning_threshold,poisoned_outfile);
-        benchmark_regression<create_regression_tournament_selection<LogNorm>>(poisoned_data,poisoned_lookups,"LogTE",data_name, poisoning_threshold,poisoned_outfile);
-        benchmark_regression<create_regression_tournament_selection<FastDiscreteLogNorm>>(poisoned_data,poisoned_lookups,"DLogTE",data_name,poisoning_threshold, poisoned_outfile);
-        benchmark_regression<build_regression_direct_descent>(poisoned_data,poisoned_lookups,"2P",data_name,poisoning_threshold, poisoned_outfile);
-        benchmark_regression<theil_sen>(poisoned_data,poisoned_lookups,"TheilSen",data_name, poisoning_threshold,poisoned_outfile);
-        benchmark_regression<create_regression_optimal<L1Norm>>(poisoned_data,poisoned_lookups,"LAD",data_name,poisoning_threshold, poisoned_outfile);
-        benchmark_alex(poisoned_data,legit_lookups,"ALEX",data_name,poisoning_threshold, poisoned_outfile);
-        benchmark_pgm(poisoned_data,legit_lookups,"PGM",data_name,poisoning_threshold, poisoned_outfile);
+        benchmark_regression<simple_linear_regression_stable>(poisoned_data,lookups,"SLR",data_name, poisoning_threshold,poisoned_outfile);
+        benchmark_regression<create_regression_tournament_selection<LogNorm>>(poisoned_data,lookups,"LogTE",data_name, poisoning_threshold,poisoned_outfile);
+        benchmark_regression<create_regression_tournament_selection<FastDiscreteLogNorm>>(poisoned_data,lookups,"DLogTE",data_name,poisoning_threshold, poisoned_outfile);
+        benchmark_regression<build_regression_direct_descent>(poisoned_data,lookups,"2P",data_name,poisoning_threshold, poisoned_outfile);
+        benchmark_regression<theil_sen>(poisoned_data,lookups,"TheilSen",data_name, poisoning_threshold,poisoned_outfile);
+        benchmark_regression<create_regression_optimal<L1Norm>>(poisoned_data,lookups,"LAD",data_name,poisoning_threshold, poisoned_outfile);
+        benchmark_alex(poisoned_data, lookups, "ALEX", data_name, poisoning_threshold, poisoned_outfile);
+        benchmark_pgm(poisoned_data, lookups, "PGM", data_name, poisoning_threshold, poisoned_outfile);
 
 
 
