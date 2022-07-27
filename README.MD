@@ -1,5 +1,7 @@
 # Logarithmic Error Regression
-This repository implements a microbenchmark for all regressions discussed in "A Tailored Regression for Learned Indexes : Logarithmic Error Regression"
+This repository implements the experiments described in "Testing the Robustness of Learned Index Structures". 
+
+It is based on previous work that was aimed at developing a microbenchmark for learned indexes, as discussed in "A Tailored Regression for Learned Indexes : Logarithmic Error Regression"
 
 Run using:
 ```
@@ -18,7 +20,7 @@ randint
 debug
 exp
 outlier
-poisoning (work-in-progress)
+*poisoning*
 ```
 
 Example inputs/outputs:
