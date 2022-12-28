@@ -32,7 +32,7 @@ long double calculate_error_alex(std::vector<double>& data, alex::Alex<KEY_TYPE,
 }
 
 /*
-    Benchmark ALEX by measuring lookuptimes
+    Benchmark ALEX by measuring lookup times
 */
 long benchmark_lookup_alex(std::vector<double> & data, std::vector<double> lookups, alex::Alex<KEY_TYPE, PAYLOAD_TYPE> & index){
     int data_size = data.size()-1;
