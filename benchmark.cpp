@@ -52,7 +52,14 @@ int main(int argc, char *argv[]){
         benchmark_regression<theil_sen>(legitimate_data,lookups,"TheilSen",data_name, poisoning_threshold, legitimate_outfile);
         benchmark_regression<create_regression_optimal<L1Norm>>(legitimate_data,lookups,"LAD",data_name,poisoning_threshold, legitimate_outfile);
         benchmark_alex(legitimate_data, lookups, "ALEX", data_name, poisoning_threshold, legitimate_outfile);
-        benchmark_pgm(legitimate_data, lookups, "PGM", data_name, poisoning_threshold, legitimate_outfile);
+        benchmark_pgm<2,4>(legitimate_data, lookups, "PGM_2_4", data_name, poisoning_threshold, legitimate_outfile);
+        benchmark_pgm<4,3>(legitimate_data, lookups, "PGM_4_3", data_name, poisoning_threshold, legitimate_outfile);
+        benchmark_pgm<8,2>(legitimate_data, lookups, "PGM_8_2", data_name, poisoning_threshold, legitimate_outfile);
+        benchmark_pgm<16,2>(legitimate_data, lookups, "PGM_16_2", data_name, poisoning_threshold, legitimate_outfile);
+        benchmark_pgm<32,1>(legitimate_data, lookups, "PGM_32_1", data_name, poisoning_threshold, legitimate_outfile);
+        benchmark_pgm<64,1>(legitimate_data, lookups, "PGM_64_1", data_name, poisoning_threshold, legitimate_outfile);
+
+
 
 
         std::cout << std::endl << std::endl;
@@ -64,7 +71,12 @@ int main(int argc, char *argv[]){
         benchmark_regression<theil_sen>(poisoned_data,lookups,"TheilSen",data_name, poisoning_threshold,poisoned_outfile);
         benchmark_regression<create_regression_optimal<L1Norm>>(poisoned_data,lookups,"LAD",data_name,poisoning_threshold, poisoned_outfile);
         benchmark_alex(poisoned_data, lookups, "ALEX", data_name, poisoning_threshold, poisoned_outfile);
-        benchmark_pgm(poisoned_data, lookups, "PGM", data_name, poisoning_threshold, poisoned_outfile);
+        benchmark_pgm<2,4>(poisoned_data, lookups, "PGM_2_4", data_name, poisoning_threshold, poisoned_outfile);
+        benchmark_pgm<4,3>(poisoned_data, lookups, "PGM_4_3", data_name, poisoning_threshold, poisoned_outfile);
+        benchmark_pgm<8,2>(poisoned_data, lookups, "PGM_8_2", data_name, poisoning_threshold, poisoned_outfile);
+        benchmark_pgm<16,2>(poisoned_data, lookups, "PGM_16_2", data_name, poisoning_threshold, poisoned_outfile);
+        benchmark_pgm<32,1>(poisoned_data, lookups, "PGM_32_!", data_name, poisoning_threshold, poisoned_outfile);
+        benchmark_pgm<64,1>(poisoned_data, lookups, "PGM_64_1", data_name, poisoning_threshold, poisoned_outfile);
 
 
 
