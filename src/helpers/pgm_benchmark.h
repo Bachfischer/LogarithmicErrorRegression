@@ -13,8 +13,8 @@
 /*
     Calculates the error for a single element for a certain linear function
 */
-template<ERROR_TYPE E, bool ROUND = true, bool BOUNDED = true, int EPSILON, int EPSILON_RECURSIVE>
-inline double calculate_error_single_element_pgm(std::vector<double>& data, pgm::PGMIndex<KEY_TYPE, EPSILON, EPSILON_RECURSIVE> & index, int i){
+template<ERROR_TYPE E, bool ROUND = true, bool BOUNDED = true, int EPSILON>
+inline double calculate_error_single_element_pgm(std::vector<double>& data, pgm::PGMIndex<KEY_TYPE, EPSILON> & index, int i){
     double x = data[i];
     double y = i;
     auto approx_range = index.search(x);
@@ -26,11 +26,11 @@ inline double calculate_error_single_element_pgm(std::vector<double>& data, pgm:
 /*
     Calculates the total error for a linear function
 */
-template<ERROR_TYPE E, bool CORRECT = true, bool BOUNDED = true, int EPSILON, int EPSILON_RECURSIVE>
-long double calculate_error_pgm(std::vector<double>& data, pgm::PGMIndex<KEY_TYPE, EPSILON, EPSILON_RECURSIVE> & index) {
+template<ERROR_TYPE E, bool CORRECT = true, bool BOUNDED = true, int EPSILON>
+long double calculate_error_pgm(std::vector<double>& data, pgm::PGMIndex<KEY_TYPE, EPSILON> & index) {
     long double total_error = 0;
     for (long i = 0; i < data.size(); i++) {
-        total_error += calculate_error_single_element_pgm<E, CORRECT, BOUNDED, EPSILON, EPSILON_RECURSIVE>(data, index, i);
+        total_error += calculate_error_single_element_pgm<E, CORRECT, BOUNDED, EPSILON>(data, index, i);
     }
     return total_error;
 }
@@ -38,8 +38,8 @@ long double calculate_error_pgm(std::vector<double>& data, pgm::PGMIndex<KEY_TYP
 /*
     Benchmark PGM by measuring lookup times
 */
-template<int EPSILON, int EPSILON_RECURSIVE>
-long benchmark_lookup_pgm(std::vector<double> & data, std::vector<double> lookups, pgm::PGMIndex<KEY_TYPE, EPSILON, EPSILON_RECURSIVE> & index){
+template<int EPSILON>
+long benchmark_lookup_pgm(std::vector<double> & data, std::vector<double> lookups, pgm::PGMIndex<KEY_TYPE, EPSILON> & index){
     int data_size = data.size()-1;
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -54,11 +54,11 @@ long benchmark_lookup_pgm(std::vector<double> & data, std::vector<double> lookup
     return duration.count();
 }
 
-template<int EPSILON, int EPSILON_RECURSIVE>
-std::vector<long> perform_benchmark(pgm::PGMIndex<KEY_TYPE, EPSILON, EPSILON_RECURSIVE> & index, std::vector<double>& data, std::vector<double>& lookups, int num){
+template<int EPSILON>
+std::vector<long> perform_benchmark(pgm::PGMIndex<KEY_TYPE, EPSILON> & index, std::vector<double>& data, std::vector<double>& lookups, int num){
     std::vector<long> measurements;
     for (int i = 0; i < num; i++){
-        long time = benchmark_lookup_pgm<EPSILON, EPSILON_RECURSIVE>(data, lookups, index);
+        long time = benchmark_lookup_pgm<EPSILON>(data, lookups, index);
         measurements.push_back(time);
     }
 
@@ -66,18 +66,18 @@ std::vector<long> perform_benchmark(pgm::PGMIndex<KEY_TYPE, EPSILON, EPSILON_REC
     return measurements;
 }
 
-template<int EPSILON, int EPSILON_RECURSIVE>
+template<int EPSILON>
 void benchmark_pgm(std::vector<double> & data, std::vector<double> & lookups, std::string regression_name, std::string data_name, double poisoning_threshold, std::string outfile){
 
     auto start = std::chrono::high_resolution_clock::now();
 
     // Create PGM and bulk load
-    pgm::PGMIndex<KEY_TYPE, EPSILON, EPSILON_RECURSIVE> index(data);
+    pgm::PGMIndex<KEY_TYPE, EPSILON> index(data);
 
     auto stop = std::chrono::high_resolution_clock::now();
     long build_time = std::chrono::duration_cast<std::chrono::nanoseconds>(stop - start).count();
 
-    std::vector<long> measurements = perform_benchmark<EPSILON, EPSILON_RECURSIVE>(index, data, lookups, 30);
+    std::vector<long> measurements = perform_benchmark<EPSILON>(index, data, lookups, 30);
 
     double mean = 0;
     double median = measurements[measurements.size()/2];
@@ -89,9 +89,9 @@ void benchmark_pgm(std::vector<double> & data, std::vector<double> & lookups, st
     mean /= lookups.size();
     median /= lookups.size();
 
-    long log_error = calculate_error_pgm<LogNorm, true, false, EPSILON, EPSILON_RECURSIVE>(data, index);
-    long d_log_error = calculate_error_pgm<DiscreteLogNorm, true, false, EPSILON, EPSILON_RECURSIVE>(data, index);
-    long mse_error = calculate_error_pgm<L2Norm, true, false, EPSILON, EPSILON_RECURSIVE>(data, index);
+    long log_error = calculate_error_pgm<LogNorm, true, false, EPSILON>(data, index);
+    long d_log_error = calculate_error_pgm<DiscreteLogNorm, true, false, EPSILON>(data, index);
+    long mse_error = calculate_error_pgm<L2Norm, true, false, EPSILON>(data, index);
 
     std::ofstream file;
     file.open(outfile, std::ios_base::app);
