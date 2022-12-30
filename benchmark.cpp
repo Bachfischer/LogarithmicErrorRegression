@@ -52,12 +52,12 @@ int main(int argc, char *argv[]){
         benchmark_regression<theil_sen>(legitimate_data,lookups,"TheilSen",data_name, poisoning_threshold, legitimate_outfile);
         benchmark_regression<create_regression_optimal<L1Norm>>(legitimate_data,lookups,"LAD",data_name,poisoning_threshold, legitimate_outfile);
         benchmark_alex(legitimate_data, lookups, "ALEX", data_name, poisoning_threshold, legitimate_outfile);
-        benchmark_pgm<2>(legitimate_data, lookups, "PGM_2_4", data_name, poisoning_threshold, legitimate_outfile);
-        benchmark_pgm<4>(legitimate_data, lookups, "PGM_4_3", data_name, poisoning_threshold, legitimate_outfile);
-        benchmark_pgm<8>(legitimate_data, lookups, "PGM_8_2", data_name, poisoning_threshold, legitimate_outfile);
-        benchmark_pgm<16>(legitimate_data, lookups, "PGM_16_2", data_name, poisoning_threshold, legitimate_outfile);
-        benchmark_pgm<32>(legitimate_data, lookups, "PGM_32_1", data_name, poisoning_threshold, legitimate_outfile);
-        benchmark_pgm<64>(legitimate_data, lookups, "PGM_64_1", data_name, poisoning_threshold, legitimate_outfile);
+        benchmark_pgm<2>(legitimate_data, lookups, "PGM_2", data_name, poisoning_threshold, legitimate_outfile);
+        benchmark_pgm<4>(legitimate_data, lookups, "PGM_4", data_name, poisoning_threshold, legitimate_outfile);
+        benchmark_pgm<8>(legitimate_data, lookups, "PGM_8", data_name, poisoning_threshold, legitimate_outfile);
+        benchmark_pgm<16>(legitimate_data, lookups, "PGM_16", data_name, poisoning_threshold, legitimate_outfile);
+        benchmark_pgm<32>(legitimate_data, lookups, "PGM_32", data_name, poisoning_threshold, legitimate_outfile);
+        benchmark_pgm<64>(legitimate_data, lookups, "PGM_64", data_name, poisoning_threshold, legitimate_outfile);
 
 
 
