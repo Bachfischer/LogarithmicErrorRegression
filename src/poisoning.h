@@ -110,11 +110,11 @@ std::vector<double> partition_non_occupied_keys(std::vector<double> & K, std::se
 std::set<double> obtain_poisoning_keys(double poisoning_threshold, std::vector<double> & keyset, std::vector<size_t> &rankset) {
     // Total number of elements
     int n = keyset.size();
-    //std::cout << std::endl << "Number of legitimate keys: " << n << std::endl;
+    std::cout << std::endl << "Number of legitimate keys: " << n << std::endl;
 
     // Number of poisoning keys P
     int P = int(poisoning_threshold * n);
-    //std::cout << "Number of poisoning keys to be generated: " << P << std::endl;
+    std::cout << "Number of poisoning keys to be generated: " << P << std::endl;
 
     std::set<double> poisoning_keys;
 
@@ -219,7 +219,7 @@ std::set<double> obtain_poisoning_keys(double poisoning_threshold, std::vector<d
         // get argmax of items in L
 
         int optimal_key_index =  std::distance(L.begin(),std::max_element(L.begin(), L.end()));
-        //std::cout << "Generated poisoning key: " <<  S[optimal_key_index] << std::endl;
+        std::cout << "Generated poisoning key: " <<  S[optimal_key_index] << std::endl;
         poisoning_keys.insert(S[optimal_key_index]);
     }
     return poisoning_keys;
@@ -230,20 +230,20 @@ std::set<double> obtain_poisoning_keys(double poisoning_threshold, std::vector<d
 */
 std::vector<double> perform_poisoning(std::vector<double> & legit_keys, double poisoning_threshold) {
 
-    /*
+
     std::cout << "Legitimate keys: " << std::endl;
     for (double i: legit_keys)
         std::cout << i << ' ';
-    */
+
 
     std::vector<size_t> legit_ranks = tag_sort(legit_keys);
 
-    /*
+
     std::cout << std::endl << "Legitimate ranks: " << std::endl;
 
     for (size_t i: legit_ranks)
         std::cout << i << ' ';
-    */
+
 
     std::set<double> poisoning_keys = obtain_poisoning_keys(poisoning_threshold, legit_keys, legit_ranks);
 
@@ -254,12 +254,12 @@ std::vector<double> perform_poisoning(std::vector<double> & legit_keys, double p
     std::merge(legit_keys.begin(), legit_keys.end(), poisoning_keys.begin(), poisoning_keys.end(), std::back_inserter(poisoned_keyset));
     std::sort(poisoned_keyset.begin(), poisoned_keyset.end());
 
-    /*
+
     std::cout << "Poisoned keyset: " << std::endl;
     for (double i: poisoned_keyset)
         std::cout << i << ' ';
     std::cout << std::endl;
-    */
+
     return poisoned_keyset;
 
 }
